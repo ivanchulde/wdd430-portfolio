@@ -1,10 +1,10 @@
 import ProjectList from "@/components/ProjectList";
-import { getProjects } from "@/lib/projects-db";
+import { getOpenSourceProjects } from "@/lib/projects-db";
 
 export const dynamic = "force-dynamic";
 
 export default async function OpenSourcePage() {
-  const projects = await getProjects("opensource");
+  const projects = await getOpenSourceProjects();
 
   return (
     <main className="container mx-auto px-6 py-12">

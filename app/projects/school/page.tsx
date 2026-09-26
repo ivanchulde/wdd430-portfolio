@@ -1,11 +1,10 @@
-import ProjectList from "@/components/ProjectList";
-import { getProjects } from "@/lib/projects-db";
+import { Suspense } from "react";
+import SchoolProjectList from "@/components/projects/SchoolProjectList";
+import SchoolProjectSkeleton from "@/components/projects/SchoolProjectSkeleton";
 
 export const dynamic = "force-dynamic";
 
-export default async function SchoolProjectsPage() {
-  const projects = await getProjects("school");
-
+export default function SchoolProjectsPage() {
   return (
     <main className="container mx-auto px-6 py-12">
       <h1 className="mb-4 text-4xl font-bold text-gray-900">
@@ -16,7 +15,9 @@ export default async function SchoolProjectsPage() {
         These are some of the projects I have created for my classes.
       </p>
 
-      <ProjectList projects={projects} />
+      <Suspense fallback={<SchoolProjectSkeleton />}>
+        <SchoolProjectList />
+      </Suspense>
     </main>
   );
 }

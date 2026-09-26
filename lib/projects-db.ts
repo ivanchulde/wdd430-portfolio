@@ -27,3 +27,7 @@ export async function getProjectById(id: number): Promise<Project | null> {
   `;
   return rows[0] ?? null;
 }
+
+export async function getOpenSourceProjects(): Promise<Project[]> {
+  return getProjects("opensource");
+}
