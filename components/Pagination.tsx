@@ -7,9 +7,7 @@ interface PaginationProps {
   totalPages: number;
 }
 
-export default function Pagination({
-  totalPages,
-}: PaginationProps) {
+export default function Pagination({ totalPages }: PaginationProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -32,35 +30,35 @@ export default function Pagination({
 
   return (
     <nav
-      className="mt-8 flex items-center justify-center gap-4"
+      className="mt-10 flex flex-wrap items-center justify-center gap-3"
       aria-label="Pagination"
     >
       {currentPage > 1 ? (
         <Link
           href={createPageURL(previousPage)}
-          className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+          className="rounded-full border border-border bg-surface px-5 py-2 text-sm font-semibold text-foreground shadow-sm transition hover:border-primary/30 hover:bg-primary-light hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
         >
           Previous
         </Link>
       ) : (
-        <span className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-400">
+        <span className="rounded-full border border-border px-5 py-2 text-sm font-medium text-muted/50">
           Previous
         </span>
       )}
 
-      <span className="text-sm text-gray-600">
+      <span className="rounded-full bg-primary-light px-4 py-2 text-sm font-medium text-primary-dark">
         Page {currentPage} of {totalPages}
       </span>
 
       {currentPage < totalPages ? (
         <Link
           href={createPageURL(nextPage)}
-          className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+          className="rounded-full border border-border bg-surface px-5 py-2 text-sm font-semibold text-foreground shadow-sm transition hover:border-primary/30 hover:bg-primary-light hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
         >
           Next
         </Link>
       ) : (
-        <span className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-400">
+        <span className="rounded-full border border-border px-5 py-2 text-sm font-medium text-muted/50">
           Next
         </span>
       )}

@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import ProjectList from "@/components/ProjectList";
 import type { Project } from "@/lib/projects-db";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Open Source Projects",
+  description:
+    "Open source projects built by Iván Chulde with Next.js, TypeScript, Python, and Docker.",
+};
 
 async function getBaseUrl(): Promise<string> {
   const requestHeaders = await headers();
@@ -37,13 +44,25 @@ export default async function OpenSourcePage() {
   const projects = (await response.json()) as Project[];
 
   return (
-    <main className="container mx-auto px-6 py-12">
-      <h1 className="mb-4 text-4xl font-bold text-gray-900">
-        Open Source Projects
-      </h1>
+    <main className="mx-auto max-w-6xl px-6 py-14">
+      <header className="mb-8">
+        <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
+          Open source
+        </p>
 
-      <p className="mb-8 text-lg text-gray-600">
-        These are some of my open source projects.
+        <h1 className="mb-3 text-4xl font-bold tracking-tight text-foreground">
+          Open Source Projects
+        </h1>
+
+        <p className="max-w-2xl text-lg leading-8 text-muted">
+          These are some of my open source projects. I enjoy sharing code
+          and learning in public.
+        </p>
+      </header>
+
+      <p className="mb-6 text-sm text-muted">
+        {projects.length}{" "}
+        {projects.length === 1 ? "project" : "projects"}
       </p>
 
       <ProjectList projects={projects} />

@@ -23,22 +23,43 @@ export default function ProjectSearch() {
   }, 300);
 
   return (
-    <div className="mb-8">
+    <div className="mb-10">
       <label
         htmlFor="project-search"
-        className="mb-2 block text-sm font-medium text-gray-700"
+        className="mb-2 block text-sm font-semibold text-foreground"
       >
         Search projects
       </label>
 
-      <input
-        id="project-search"
-        type="search"
-        placeholder="Search by title, description, or technology..."
-        defaultValue={searchParams.get("query") ?? ""}
-        onChange={(event) => handleSearch(event.target.value)}
-        className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 shadow-sm outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-200"
-      />
+      <div className="relative">
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-muted"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </svg>
+        </span>
+
+        <input
+          id="project-search"
+          type="search"
+          placeholder="Search by title, description, or technology..."
+          defaultValue={searchParams.get("query") ?? ""}
+          onChange={(event) => handleSearch(event.target.value)}
+          className="w-full rounded-xl border border-border bg-surface py-3 pl-11 pr-4 text-foreground shadow-sm outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-4 focus:ring-primary/15"
+        />
+      </div>
     </div>
   );
 }

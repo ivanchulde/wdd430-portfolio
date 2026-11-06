@@ -14,7 +14,10 @@ export default function NavLinks() {
   ];
 
   return (
-    <nav aria-label="Main navigation" className="flex flex-wrap gap-2">
+    <nav
+      aria-label="Main navigation"
+      className="flex flex-wrap items-center gap-1 sm:gap-2"
+    >
       {links.map((link) => {
         const isActive =
           link.href === "/"
@@ -29,8 +32,8 @@ export default function NavLinks() {
             aria-current={isActive ? "page" : undefined}
             className={
               isActive
-                ? "rounded-md bg-white px-3 py-1.5 text-sm font-bold text-blue-700"
-                : "rounded-md px-3 py-1.5 text-sm text-blue-100 transition hover:bg-blue-700 hover:text-white"
+                ? "rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-primary-dark shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
+                : "rounded-full px-4 py-1.5 text-sm font-medium text-white/80 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
             }
           >
             {link.label}

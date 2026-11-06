@@ -6,7 +6,7 @@ export default function ProjectsLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <section className="min-h-screen">
+    <section>
       <ProjectsNav />
 
       {children}
