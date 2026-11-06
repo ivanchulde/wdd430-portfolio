@@ -6,9 +6,17 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: idParam } = await params;
+
+  if (!/^\d+$/.test(idParam)) {
+    return NextResponse.json(
+      { error: "Invalid id" },
+      { status: 400 }
+    );
+  }
+
   const id = Number(idParam);
 
-  if (Number.isNaN(id)) {
+  if (!Number.isSafeInteger(id) || id <= 0) {
     return NextResponse.json(
       { error: "Invalid id" },
       { status: 400 }
