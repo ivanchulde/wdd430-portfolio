@@ -29,6 +29,13 @@ export default function ProjectsLayout({
           >
             School Projects
           </Link>
+
+          <Link
+            href="/projects/settings"
+            className="font-medium text-blue-600 hover:text-blue-800"
+          >
+            Settings
+          </Link>
         </div>
       </nav>
 
