@@ -14,9 +14,13 @@ export default function NavLinks() {
   ];
 
   return (
-    <nav className="flex gap-6">
+    <nav aria-label="Main navigation" className="flex flex-wrap gap-2">
       {links.map((link) => {
-        const isActive = pathname === link.href;
+        const isActive =
+          link.href === "/"
+            ? pathname === "/"
+            : pathname === link.href ||
+              pathname.startsWith(`${link.href}/`);
 
         return (
           <Link
@@ -25,8 +29,8 @@ export default function NavLinks() {
             aria-current={isActive ? "page" : undefined}
             className={
               isActive
-                ? "font-bold text-blue-700"
-                : "text-gray-600 hover:text-blue-600"
+                ? "rounded-md bg-white px-3 py-1.5 text-sm font-bold text-blue-700"
+                : "rounded-md px-3 py-1.5 text-sm text-blue-100 transition hover:bg-blue-700 hover:text-white"
             }
           >
             {link.label}
