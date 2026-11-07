@@ -4,7 +4,7 @@ This is my portfolio project for WDD 430 - Web Full-Stack Development.
 
 ## Live Application
 
-[View my portfolio](https://TU-URL-DE-VERCEL.vercel.app)
+[View my portfolio](https://wdd430-portfolio-jxks.vercel.app/)
 
 ## Technologies
 
