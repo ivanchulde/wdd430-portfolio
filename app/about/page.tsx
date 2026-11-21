@@ -37,6 +37,11 @@ export default function About() {
       description:
         "I enjoy learning new tools, refining my code, and turning ideas into working products.",
     },
+    {
+      title: "Systems and hardware",
+      description:
+        "Practical knowledge of Linux and Windows systems, as well as hardware and technical solutions.",
+    },
   ];
 
   return (

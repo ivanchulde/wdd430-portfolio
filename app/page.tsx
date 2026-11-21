@@ -37,6 +37,10 @@ export default function Home() {
             <span className="h-2 w-2 rounded-full bg-accent" />
             Full-Stack Developer
           </span>
+          <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-surface px-4 py-1.5 text-xs font-semibold tracking-wide text-primary-dark shadow-sm">
+            <span className="h-2 w-2 rounded-full bg-accent" />
+            Electronics and Communications Engineer
+          </span>
 
           <h1 className="mx-auto mb-5 max-w-3xl text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
             Hi, I&apos;m Iván Chulde
