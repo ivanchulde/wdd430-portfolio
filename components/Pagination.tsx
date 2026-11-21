@@ -4,14 +4,16 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 
 interface PaginationProps {
+  currentPage: number;
   totalPages: number;
 }
 
-export default function Pagination({ totalPages }: PaginationProps) {
+export default function Pagination({
+  currentPage,
+  totalPages,
+}: PaginationProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  const currentPage = Number(searchParams.get("page")) || 1;
 
   function createPageURL(pageNumber: number) {
     const params = new URLSearchParams(searchParams.toString());

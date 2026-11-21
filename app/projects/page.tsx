@@ -88,7 +88,10 @@ export default async function ProjectsPage(props: {
       {projects.length > 0 ? (
         <>
           <ProjectList projects={projects} />
-          <Pagination totalPages={totalPages} />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+          />
         </>
       ) : (
         <div className="rounded-2xl border border-dashed border-border bg-surface p-12 text-center">
