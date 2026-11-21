@@ -4,9 +4,9 @@ import ProjectList from "@/components/ProjectList";
 import ProjectSearch from "@/components/ProjectSearch";
 import Pagination from "@/components/Pagination";
 import {
-  ITEMS_PER_PAGE,
   fetchFilteredProjects,
   fetchProjectsCount,
+  fetchProjectsPages,
 } from "@/lib/projects-db";
 
 export const dynamic = "force-dynamic";
@@ -33,10 +33,7 @@ export default async function ProjectsPage(props: {
     Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
 
   const totalProjects = await fetchProjectsCount(query);
-  const totalPages = Math.max(
-    Math.ceil(totalProjects / ITEMS_PER_PAGE),
-    1
-  );
+  const totalPages = await fetchProjectsPages(query, totalProjects);
 
   const currentPage = Math.min(Math.max(requestedPage, 1), totalPages);
   const projects = await fetchFilteredProjects(query, currentPage);

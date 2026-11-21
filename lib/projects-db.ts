@@ -326,9 +326,10 @@ export async function fetchProjectsCount(
 }
 
 export async function fetchProjectsPages(
-  query: string
+  query: string,
+  count?: number
 ): Promise<number> {
-  const count = await fetchProjectsCount(query);
+  const total = count ?? (await fetchProjectsCount(query));
 
-  return Math.max(Math.ceil(count / ITEMS_PER_PAGE), 1);
+  return Math.max(Math.ceil(total / ITEMS_PER_PAGE), 1);
 }
