@@ -290,16 +290,11 @@ export async function fetchFilteredProjects(
   return rows;
 }
 
-export async function fetchProjectsPages(
+export async function fetchProjectsCount(
   query: string
 ): Promise<number> {
   if (!hasDatabase()) {
-    const filteredProjects = filterProjects(projects, query);
-
-    return Math.max(
-      Math.ceil(filteredProjects.length / ITEMS_PER_PAGE),
-      1
-    );
+    return filterProjects(projects, query).length;
   }
 
   const normalizedQuery = query.trim().slice(0, 100);
@@ -310,7 +305,7 @@ export async function fetchProjectsPages(
       FROM projects
     `;
 
-    return Math.ceil(rows[0].count / ITEMS_PER_PAGE);
+    return rows[0].count;
   }
 
   const searchPattern = `%${normalizedQuery}%`;
@@ -327,5 +322,13 @@ export async function fetchProjectsPages(
        )
   `;
 
-  return Math.ceil(rows[0].count / ITEMS_PER_PAGE);
+  return rows[0].count;
+}
+
+export async function fetchProjectsPages(
+  query: string
+): Promise<number> {
+  const count = await fetchProjectsCount(query);
+
+  return Math.max(Math.ceil(count / ITEMS_PER_PAGE), 1);
 }

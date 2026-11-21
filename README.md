@@ -121,7 +121,10 @@ All database access is centralized in `lib/projects-db.ts`:
 - `getProjects(type?)` – list projects, optionally filtered by type.
 - `getProjectById(id)` – fetch a single project.
 - `fetchFilteredProjects(query, page)` – search with pagination.
-- `fetchProjectsPages(query)` – count pages for the current search.
+- `fetchProjectsCount(query)` – count projects matching the current search.
+- `fetchProjectsPages(query)` – derive the page count from that total.
+
+Server Components call these helpers directly, so every request reads fresh data from PostgreSQL. The API routes are kept for external consumers.
 
 Search uses `ILIKE` on `title` and `description`, plus `unnest(technologies)` for technology matches. Queries are parameterized with tagged template literals.
 

@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { headers } from "next/headers";
 import ProjectList from "@/components/ProjectList";
 import ProjectSearch from "@/components/ProjectSearch";
 import Pagination from "@/components/Pagination";
 import {
-  filterProjects,
-  paginateProjects,
-  type Project,
+  ITEMS_PER_PAGE,
+  fetchFilteredProjects,
+  fetchProjectsCount,
 } from "@/lib/projects-db";
 
 export const dynamic = "force-dynamic";
@@ -17,38 +16,6 @@ export const metadata: Metadata = {
   description:
     "School and open source projects built by Iván Chulde with Next.js, React, TypeScript, Node.js, and databases.",
 };
-
-async function getBaseUrl(): Promise<string> {
-  const requestHeaders = await headers();
-  const host =
-    requestHeaders.get("x-forwarded-host") ??
-    requestHeaders.get("host");
-
-  if (!host) {
-    return process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
-  }
-
-  const protocol =
-    requestHeaders.get("x-forwarded-proto") ??
-    (host.startsWith("localhost") ? "http" : "https");
-
-  return `${protocol}://${host}`;
-}
-
-async function fetchAllProjects(): Promise<Project[]> {
-  const baseUrl = await getBaseUrl();
-  const response = await fetch(`${baseUrl}/api/projects`, {
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    throw new Error(
-      `Failed to fetch projects: ${response.status}`
-    );
-  }
-
-  return (await response.json()) as Project[];
-}
 
 export default async function ProjectsPage(props: {
   searchParams?: Promise<{
@@ -65,18 +32,19 @@ export default async function ProjectsPage(props: {
   const requestedPage =
     Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
 
-  const allProjects = await fetchAllProjects();
-  const filteredProjects = filterProjects(allProjects, query);
-
-  const { projects, totalPages } = paginateProjects(
-    filteredProjects,
-    requestedPage
+  const totalProjects = await fetchProjectsCount(query);
+  const totalPages = Math.max(
+    Math.ceil(totalProjects / ITEMS_PER_PAGE),
+    1
   );
 
+  const currentPage = Math.min(Math.max(requestedPage, 1), totalPages);
+  const projects = await fetchFilteredProjects(query, currentPage);
+
   const resultsLabel =
-    filteredProjects.length === 1
+    totalProjects === 1
       ? "1 project"
-      : `${filteredProjects.length} projects`;
+      : `${totalProjects} projects`;
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-14">
