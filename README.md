@@ -13,8 +13,10 @@ Personal portfolio built for **WDD 430 – Web Full-Stack Development**. It show
 - Debounced search by project title, description, or technology.
 - Pagination with 6 projects per page and streaming loading skeletons.
 - REST API for listing projects and fetching a single project by id.
+- Project management with create, edit, and delete Server Actions.
+- Zod validation of title, description, technologies, type, and link before every write.
 - PostgreSQL-backed data through `@vercel/postgres`, with an in-memory fallback so the app also runs without a database.
-- Dynamic rendering, so database changes appear immediately in the UI.
+- Dynamic rendering and `revalidatePath('/projects')`, so database changes appear immediately in the UI.
 
 ## Tech Stack
 
@@ -79,15 +81,19 @@ app/
   about/page.tsx              About page, skills, and highlights
   contact/page.tsx            Contact links
   projects/
-    page.tsx                  All projects with search and pagination
+    page.tsx                  All projects with search, pagination, and actions
+    create/page.tsx           Create-project form route
+    [id]/edit/page.tsx        Edit-project form route
+    actions.ts                createProject, updateProject, deleteProject
     school/page.tsx           School projects
     opensource/page.tsx       Open-source projects
-    settings/page.tsx         Placeholder for future project management
+    settings/page.tsx         Manage all projects (edit and delete)
   api/
     projects/route.ts         GET /api/projects
     projects/[id]/route.ts    GET /api/projects/:id
 components/                   Reusable UI components
 lib/
+  project-form.ts             Zod schema and form state types
   projects-db.ts              Project types, seed data, and all SQL queries
 public/                       Images and logo
 ```
@@ -123,10 +129,15 @@ All database access is centralized in `lib/projects-db.ts`:
 - `fetchFilteredProjects(query, page)` – search with pagination.
 - `fetchProjectsCount(query)` – count projects matching the current search.
 - `fetchProjectsPages(query)` – derive the page count from that total.
+- `createProjectRecord(project)` – insert a new project.
+- `updateProjectRecord(id, project)` – update one project by id.
+- `deleteProjectRecord(id)` – delete one project by id.
 
 Server Components call these helpers directly, so every request reads fresh data from PostgreSQL. The API routes are kept for external consumers.
 
 Search uses `ILIKE` on `title` and `description`, plus `unnest(technologies)` for technology matches. Queries are parameterized with tagged template literals.
+
+The create and edit forms at `/projects/create` and `/projects/[id]/edit` submit to Server Actions in `app/projects/actions.ts`. FormData is validated with `ProjectFormSchema.safeParse` before any write, and every write calls `revalidatePath('/projects')` before redirecting back to the list. Delete buttons submit the project id so only one record is removed.
 
 ## Deployment
 

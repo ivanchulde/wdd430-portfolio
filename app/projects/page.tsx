@@ -57,6 +57,13 @@ export default async function ProjectsPage(props: {
         <p className="max-w-2xl text-lg leading-8 text-muted">
           Here you can find some of my school and open source projects.
         </p>
+
+        <Link
+          href="/projects/create"
+          className="mt-6 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
+        >
+          New project
+        </Link>
       </header>
 
       <ProjectSearch />
@@ -87,7 +94,7 @@ export default async function ProjectsPage(props: {
 
       {projects.length > 0 ? (
         <>
-          <ProjectList projects={projects} />
+          <ProjectList projects={projects} showActions />
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

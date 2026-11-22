@@ -16,6 +16,8 @@ export interface Project {
   link?: string;
 }
 
+export type ProjectInput = Omit<Project, "id">;
+
 export const ITEMS_PER_PAGE = 6;
 
 const projects: Project[] = [
@@ -150,6 +152,16 @@ const projects: Project[] = [
 
 function hasDatabase(): boolean {
   return Boolean(process.env.POSTGRES_URL);
+}
+
+// The sql template only accepts primitive parameters, so serialize the
+// technologies string[] as a quoted PostgreSQL array literal and cast it.
+function toTextArray(values: string[]): string {
+  const escaped = values.map((value) =>
+    `"${value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`
+  );
+
+  return `{${escaped.join(",")}}`;
 }
 
 export function filterProjects(
@@ -332,4 +344,90 @@ export async function fetchProjectsPages(
   const total = count ?? (await fetchProjectsCount(query));
 
   return Math.max(Math.ceil(total / ITEMS_PER_PAGE), 1);
+}
+
+export async function createProjectRecord(
+  project: ProjectInput
+): Promise<Project> {
+  if (!hasDatabase()) {
+    const nextId = projects.reduce(
+      (maxId, current) => Math.max(maxId, current.id),
+      0
+    );
+
+    const created: Project = { ...project, id: nextId + 1 };
+    projects.push(created);
+
+    return created;
+  }
+
+  const { rows } = await sql<Project>`
+    INSERT INTO projects (title, description, type, technologies, link)
+    VALUES (
+      ${project.title},
+      ${project.description},
+      ${project.type},
+      ${toTextArray(project.technologies)}::text[],
+      ${project.link ?? null}
+    )
+    RETURNING id, title, description, type, technologies, link
+  `;
+
+  if (!rows[0]) {
+    throw new Error("Could not create the project.");
+  }
+
+  return rows[0];
+}
+
+export async function updateProjectRecord(
+  id: number,
+  project: ProjectInput
+): Promise<Project | null> {
+  if (!hasDatabase()) {
+    const index = projects.findIndex((current) => current.id === id);
+
+    if (index === -1) {
+      return null;
+    }
+
+    const updated: Project = { ...project, id };
+    projects[index] = updated;
+
+    return updated;
+  }
+
+  const { rows } = await sql<Project>`
+    UPDATE projects
+    SET
+      title = ${project.title},
+      description = ${project.description},
+      type = ${project.type},
+      technologies = ${toTextArray(project.technologies)}::text[],
+      link = ${project.link ?? null}
+    WHERE id = ${id}
+    RETURNING id, title, description, type, technologies, link
+  `;
+
+  return rows[0] ?? null;
+}
+
+export async function deleteProjectRecord(id: number): Promise<boolean> {
+  if (!hasDatabase()) {
+    const index = projects.findIndex((current) => current.id === id);
+
+    if (index === -1) {
+      return false;
+    }
+
+    projects.splice(index, 1);
+
+    return true;
+  }
+
+  const { rowCount } = await sql`
+    DELETE FROM projects WHERE id = ${id}
+  `;
+
+  return (rowCount ?? 0) > 0;
 }

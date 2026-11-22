@@ -5,9 +5,10 @@ import { usePathname } from "next/navigation";
 
 const links = [
   { href: "/projects", label: "Projects" },
+  { href: "/projects/create", label: "Create Project" },
   { href: "/projects/opensource", label: "Open Source" },
   { href: "/projects/school", label: "School Projects" },
-  { href: "/projects/settings", label: "Settings" },
+  { href: "/projects/settings", label: "Manage Projects" },
 ];
 
 export default function ProjectsNav() {
