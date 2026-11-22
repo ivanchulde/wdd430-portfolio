@@ -6,6 +6,7 @@ interface ProjectCardProps {
   title: string;
   description: string;
   technologies: string[];
+  yearCompleted?: number;
   link?: string;
   showActions?: boolean;
 }
@@ -15,6 +16,7 @@ export default function ProjectCard({
   title,
   description,
   technologies,
+  yearCompleted,
   link,
   showActions = false,
 }: ProjectCardProps) {
@@ -29,6 +31,12 @@ export default function ProjectCard({
       <p className="mb-4 flex-1 text-sm leading-6 text-muted">
         {description}
       </p>
+
+      {yearCompleted && (
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
+          Completed {yearCompleted}
+        </p>
+      )}
 
       {technologies.length > 0 && (
         <ul className="mb-5 flex flex-wrap gap-2">

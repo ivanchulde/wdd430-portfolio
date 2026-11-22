@@ -13,6 +13,7 @@ type ProjectFormProps = {
     title: string;
     description: string;
     technologies: string;
+    yearCompleted: string;
     type: "school" | "opensource";
     link: string;
   };
@@ -20,12 +21,28 @@ type ProjectFormProps = {
   cancelHref?: string;
 };
 
-const initialState: ProjectFormState = {};
+const currentYear = new Date().getFullYear();
+
+const initialState: ProjectFormState = { message: null, errors: {} };
 
 const inputClass =
-  "w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-2 focus:ring-primary/20";
+  "w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-2 focus:ring-primary/30";
 
 const labelClass = "mb-1.5 block text-sm font-semibold text-foreground";
+
+const errorTextClass = "mt-1.5 text-sm text-red-600";
+
+function FieldError({ id, errors }: { id: string; errors?: string[] }) {
+  return (
+    <div id={id} aria-live="polite" aria-atomic="true">
+      {errors?.map((error, index) => (
+        <p key={`${id}-${index}`} className={errorTextClass}>
+          {error}
+        </p>
+      ))}
+    </div>
+  );
+}
 
 export default function ProjectForm({
   action,
@@ -38,6 +55,7 @@ export default function ProjectForm({
     title: "",
     description: "",
     technologies: "",
+    yearCompleted: String(currentYear),
     type: "school" as const,
     link: "",
   };
@@ -49,7 +67,8 @@ export default function ProjectForm({
     >
       {state.message && (
         <p
-          role="alert"
+          aria-live="polite"
+          aria-atomic="true"
           className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
         >
           {state.message}
@@ -59,7 +78,7 @@ export default function ProjectForm({
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <label htmlFor="title" className={labelClass}>
-            Title
+            Project Title
           </label>
           <input
             id="title"
@@ -69,15 +88,11 @@ export default function ProjectForm({
             maxLength={120}
             defaultValue={values.title}
             aria-invalid={Boolean(state.errors?.title)}
-            aria-describedby={state.errors?.title ? "title-error" : undefined}
+            aria-describedby="title-error"
             className={inputClass}
             placeholder="Project title"
           />
-          {state.errors?.title && (
-            <p id="title-error" className="mt-1.5 text-sm text-red-600">
-              {state.errors.title[0]}
-            </p>
-          )}
+          <FieldError id="title-error" errors={state.errors?.title} />
         </div>
 
         <div className="sm:col-span-2">
@@ -92,22 +107,19 @@ export default function ProjectForm({
             maxLength={1000}
             defaultValue={values.description}
             aria-invalid={Boolean(state.errors?.description)}
-            aria-describedby={
-              state.errors?.description ? "description-error" : undefined
-            }
+            aria-describedby="description-error"
             className={inputClass}
             placeholder="What does this project do?"
           />
-          {state.errors?.description && (
-            <p id="description-error" className="mt-1.5 text-sm text-red-600">
-              {state.errors.description[0]}
-            </p>
-          )}
+          <FieldError
+            id="description-error"
+            errors={state.errors?.description}
+          />
         </div>
 
         <div className="sm:col-span-2">
           <label htmlFor="technologies" className={labelClass}>
-            Technologies
+            Technologies (comma-separated)
           </label>
           <input
             id="technologies"
@@ -117,20 +129,41 @@ export default function ProjectForm({
             maxLength={300}
             defaultValue={values.technologies}
             aria-invalid={Boolean(state.errors?.technologies)}
-            aria-describedby={
-              state.errors?.technologies ? "technologies-error" : undefined
-            }
+            aria-describedby="technologies-hint technologies-error"
             className={inputClass}
             placeholder="Next.js, TypeScript, PostgreSQL"
           />
-          <p className="mt-1.5 text-xs text-muted">
+          <p id="technologies-hint" className="mt-1.5 text-xs text-muted">
             Separate multiple technologies with commas.
           </p>
-          {state.errors?.technologies && (
-            <p id="technologies-error" className="mt-1.5 text-sm text-red-600">
-              {state.errors.technologies[0]}
-            </p>
-          )}
+          <FieldError
+            id="technologies-error"
+            errors={state.errors?.technologies}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="yearCompleted" className={labelClass}>
+            Year Completed
+          </label>
+          <input
+            id="yearCompleted"
+            name="yearCompleted"
+            type="number"
+            min={2000}
+            max={currentYear}
+            step={1}
+            required
+            defaultValue={values.yearCompleted}
+            aria-invalid={Boolean(state.errors?.yearCompleted)}
+            aria-describedby="yearCompleted-error"
+            className={inputClass}
+            placeholder={String(currentYear)}
+          />
+          <FieldError
+            id="yearCompleted-error"
+            errors={state.errors?.yearCompleted}
+          />
         </div>
 
         <div>
@@ -142,19 +175,16 @@ export default function ProjectForm({
             name="type"
             defaultValue={values.type}
             aria-invalid={Boolean(state.errors?.type)}
+            aria-describedby="type-error"
             className={inputClass}
           >
             <option value="school">School</option>
             <option value="opensource">Open Source</option>
           </select>
-          {state.errors?.type && (
-            <p className="mt-1.5 text-sm text-red-600">
-              {state.errors.type[0]}
-            </p>
-          )}
+          <FieldError id="type-error" errors={state.errors?.type} />
         </div>
 
-        <div>
+        <div className="sm:col-span-2">
           <label htmlFor="link" className={labelClass}>
             Project link <span className="font-normal text-muted">(optional)</span>
           </label>
@@ -165,15 +195,11 @@ export default function ProjectForm({
             maxLength={300}
             defaultValue={values.link}
             aria-invalid={Boolean(state.errors?.link)}
-            aria-describedby={state.errors?.link ? "link-error" : undefined}
+            aria-describedby="link-error"
             className={inputClass}
             placeholder="https://github.com/..."
           />
-          {state.errors?.link && (
-            <p id="link-error" className="mt-1.5 text-sm text-red-600">
-              {state.errors.link[0]}
-            </p>
-          )}
+          <FieldError id="link-error" errors={state.errors?.link} />
         </div>
       </div>
 

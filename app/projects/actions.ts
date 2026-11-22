@@ -26,6 +26,7 @@ function readProjectFields(formData: FormData) {
     title: field(formData, "title"),
     description: field(formData, "description"),
     technologies: field(formData, "technologies"),
+    yearCompleted: field(formData, "yearCompleted"),
     type: field(formData, "type"),
     link: field(formData, "link"),
   });
@@ -48,12 +49,13 @@ export async function createProject(
     return validationError(validated.error);
   }
 
-  const { title, description, type, link } = validated.data;
+  const { title, description, yearCompleted, type, link } = validated.data;
 
   try {
     await createProjectRecord({
       title,
       description,
+      yearCompleted,
       type,
       technologies: splitTechnologies(validated.data.technologies),
       link: link || undefined,
@@ -86,7 +88,7 @@ export async function updateProject(
     return validationError(validated.error);
   }
 
-  const { title, description, type, link } = validated.data;
+  const { title, description, yearCompleted, type, link } = validated.data;
 
   let updated: Project | null;
 
@@ -94,6 +96,7 @@ export async function updateProject(
     updated = await updateProjectRecord(id, {
       title,
       description,
+      yearCompleted,
       type,
       technologies: splitTechnologies(validated.data.technologies),
       link: link || undefined,

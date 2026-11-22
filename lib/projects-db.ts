@@ -13,6 +13,7 @@ export interface Project {
   description: string;
   type: "opensource" | "school";
   technologies: string[];
+  yearCompleted?: number;
   link?: string;
 }
 
@@ -226,13 +227,17 @@ export async function getProjects(
 
   if (type) {
     const { rows } = await sql<Project>`
-      SELECT * FROM projects WHERE type = ${type} ORDER BY id
+      SELECT id, title, description, type, technologies,
+             year_completed AS "yearCompleted", link
+      FROM projects WHERE type = ${type} ORDER BY id
     `;
     return rows;
   }
 
   const { rows } = await sql<Project>`
-    SELECT * FROM projects ORDER BY id
+    SELECT id, title, description, type, technologies,
+           year_completed AS "yearCompleted", link
+    FROM projects ORDER BY id
   `;
 
   return rows;
@@ -246,7 +251,9 @@ export async function getProjectById(
   }
 
   const { rows } = await sql<Project>`
-    SELECT * FROM projects WHERE id = ${id}
+    SELECT id, title, description, type, technologies,
+           year_completed AS "yearCompleted", link
+    FROM projects WHERE id = ${id}
   `;
 
   return rows[0] ?? null;
@@ -272,7 +279,8 @@ export async function fetchFilteredProjects(
 
   if (!normalizedQuery) {
     const { rows } = await sql<Project>`
-      SELECT *
+      SELECT id, title, description, type, technologies,
+             year_completed AS "yearCompleted", link
       FROM projects
       ORDER BY id
       LIMIT ${ITEMS_PER_PAGE}
@@ -285,7 +293,8 @@ export async function fetchFilteredProjects(
   const searchPattern = `%${normalizedQuery}%`;
 
   const { rows } = await sql<Project>`
-    SELECT *
+    SELECT id, title, description, type, technologies,
+           year_completed AS "yearCompleted", link
     FROM projects
     WHERE title ILIKE ${searchPattern}
        OR COALESCE(description, '') ILIKE ${searchPattern}
@@ -362,15 +371,17 @@ export async function createProjectRecord(
   }
 
   const { rows } = await sql<Project>`
-    INSERT INTO projects (title, description, type, technologies, link)
+    INSERT INTO projects (title, description, type, technologies, year_completed, link)
     VALUES (
       ${project.title},
       ${project.description},
       ${project.type},
       ${toTextArray(project.technologies)}::text[],
+      ${project.yearCompleted ?? null},
       ${project.link ?? null}
     )
-    RETURNING id, title, description, type, technologies, link
+    RETURNING id, title, description, type, technologies,
+              year_completed AS "yearCompleted", link
   `;
 
   if (!rows[0]) {
@@ -404,9 +415,11 @@ export async function updateProjectRecord(
       description = ${project.description},
       type = ${project.type},
       technologies = ${toTextArray(project.technologies)}::text[],
+      year_completed = ${project.yearCompleted ?? null},
       link = ${project.link ?? null}
     WHERE id = ${id}
-    RETURNING id, title, description, type, technologies, link
+    RETURNING id, title, description, type, technologies,
+              year_completed AS "yearCompleted", link
   `;
 
   return rows[0] ?? null;

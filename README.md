@@ -14,7 +14,9 @@ Personal portfolio built for **WDD 430 – Web Full-Stack Development**. It show
 - Pagination with 6 projects per page and streaming loading skeletons.
 - REST API for listing projects and fetching a single project by id.
 - Project management with create, edit, and delete Server Actions.
-- Zod validation of title, description, technologies, type, and link before every write.
+- Zod validation of title, description, technologies, year completed, type, and link before every write.
+- Accessible forms with associated labels, `aria-describedby`, live error regions, and visible focus styles.
+- ESLint with `eslint-config-next` / `jsx-a11y` rules via `npm run lint`.
 - PostgreSQL-backed data through `@vercel/postgres`, with an in-memory fallback so the app also runs without a database.
 - Dynamic rendering and `revalidatePath('/projects')`, so database changes appear immediately in the UI.
 
@@ -118,8 +120,15 @@ CREATE TABLE IF NOT EXISTS projects (
   description TEXT,
   type VARCHAR,
   technologies TEXT[] DEFAULT '{}',
+  year_completed INTEGER,
   link VARCHAR
 );
+```
+
+If you already have the table from an earlier version, add the new column:
+
+```sql
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS year_completed INTEGER;
 ```
 
 All database access is centralized in `lib/projects-db.ts`:
@@ -140,6 +149,8 @@ Search uses `ILIKE` on `title` and `description`, plus `unnest(technologies)` fo
 The create and edit forms at `/projects/create` and `/projects/[id]/edit` submit to Server Actions in `app/projects/actions.ts`. FormData is validated with `ProjectFormSchema.safeParse` before any write, and every write calls `revalidatePath('/projects')` before redirecting back to the list. Delete buttons submit the project id so only one record is removed.
 
 Database writes are wrapped in `try...catch`. Create and edit log unexpected failures and return a friendly message through `useActionState`; delete logs and rethrows so `app/projects/error.tsx` can show a recovery UI. Missing projects use `notFound()` with the custom `app/projects/[id]/edit/not-found.tsx` page.
+
+The project forms keep an `initialState` of `{ message: null, errors: {} }`. Every field has a matching `<label htmlFor>`, a stable `aria-describedby` target, and an `aria-live="polite"` error container, so Zod field errors returned by the Server Action are announced by screen readers. `npm run lint` runs the bundled `eslint-plugin-jsx-a11y` rules.
 
 ## Deployment
 

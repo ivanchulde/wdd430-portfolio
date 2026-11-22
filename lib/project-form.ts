@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const currentYear = new Date().getFullYear();
+
 // Shared validation for the create and edit project forms. Server Actions call
 // safeParse with this schema before anything is written to the database.
 export const ProjectFormSchema = z.object({
@@ -22,6 +24,11 @@ export const ProjectFormSchema = z.object({
       (value) => value.split(",").some((tech) => tech.trim().length > 0),
       "Add at least one technology."
     ),
+  yearCompleted: z.coerce
+    .number()
+    .int("Year must be a whole number.")
+    .min(2000, "Year must be 2000 or later.")
+    .max(currentYear, `Year cannot be greater than ${currentYear}.`),
   type: z.enum(["school", "opensource"], {
     error: "Choose a project type.",
   }),
@@ -39,7 +46,7 @@ export type ProjectFormValues = z.infer<typeof ProjectFormSchema>;
 
 export type ProjectFormState = {
   errors?: Partial<Record<keyof ProjectFormValues | "form", string[]>>;
-  message?: string;
+  message?: string | null;
 };
 
 // The form uses one comma-separated text field for technologies.

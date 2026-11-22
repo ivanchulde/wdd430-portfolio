@@ -5,6 +5,7 @@ interface Project {
   title: string;
   description: string;
   technologies: string[];
+  yearCompleted?: number;
   link?: string;
 }
 

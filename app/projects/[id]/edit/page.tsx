@@ -53,6 +53,9 @@ export default async function EditProjectPage({
           title: project.title,
           description: project.description,
           technologies: project.technologies.join(", "),
+          yearCompleted: String(
+            project.yearCompleted ?? new Date().getFullYear()
+          ),
           type: project.type,
           link: project.link ?? "",
         }}
