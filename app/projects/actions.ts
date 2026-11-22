@@ -12,6 +12,7 @@ import {
   createProjectRecord,
   deleteProjectRecord,
   updateProjectRecord,
+  type Project,
 } from "@/lib/projects-db";
 
 function field(formData: FormData, name: string): string {
@@ -49,13 +50,21 @@ export async function createProject(
 
   const { title, description, type, link } = validated.data;
 
-  await createProjectRecord({
-    title,
-    description,
-    type,
-    technologies: splitTechnologies(validated.data.technologies),
-    link: link || undefined,
-  });
+  try {
+    await createProjectRecord({
+      title,
+      description,
+      type,
+      technologies: splitTechnologies(validated.data.technologies),
+      link: link || undefined,
+    });
+  } catch (error) {
+    console.error("Error creating project:", error);
+
+    return {
+      message: "Failed to create project. Please try again later.",
+    };
+  }
 
   revalidatePath("/projects");
   revalidatePath("/projects/settings");
@@ -79,13 +88,23 @@ export async function updateProject(
 
   const { title, description, type, link } = validated.data;
 
-  const updated = await updateProjectRecord(id, {
-    title,
-    description,
-    type,
-    technologies: splitTechnologies(validated.data.technologies),
-    link: link || undefined,
-  });
+  let updated: Project | null;
+
+  try {
+    updated = await updateProjectRecord(id, {
+      title,
+      description,
+      type,
+      technologies: splitTechnologies(validated.data.technologies),
+      link: link || undefined,
+    });
+  } catch (error) {
+    console.error("Error updating project:", error);
+
+    return {
+      message: "Failed to update project. Please try again later.",
+    };
+  }
 
   if (!updated) {
     return { message: "That project no longer exists." };
@@ -103,7 +122,15 @@ export async function deleteProject(formData: FormData): Promise<void> {
     throw new Error("Invalid project id.");
   }
 
-  await deleteProjectRecord(id);
+  try {
+    await deleteProjectRecord(id);
+  } catch (error) {
+    console.error("Error deleting project:", error);
+
+    throw new Error("Failed to delete project. Please try again later.", {
+      cause: error,
+    });
+  }
 
   revalidatePath("/projects");
   revalidatePath("/projects/settings");

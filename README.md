@@ -139,6 +139,8 @@ Search uses `ILIKE` on `title` and `description`, plus `unnest(technologies)` fo
 
 The create and edit forms at `/projects/create` and `/projects/[id]/edit` submit to Server Actions in `app/projects/actions.ts`. FormData is validated with `ProjectFormSchema.safeParse` before any write, and every write calls `revalidatePath('/projects')` before redirecting back to the list. Delete buttons submit the project id so only one record is removed.
 
+Database writes are wrapped in `try...catch`. Create and edit log unexpected failures and return a friendly message through `useActionState`; delete logs and rethrows so `app/projects/error.tsx` can show a recovery UI. Missing projects use `notFound()` with the custom `app/projects/[id]/edit/not-found.tsx` page.
+
 ## Deployment
 
 The project is deployed on Vercel. Pushing to `main` triggers a new build and deployment automatically. Database credentials are read from the Vercel project settings, so no environment file needs to be committed.
